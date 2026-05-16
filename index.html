@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FOXY — tufan uraz</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;700;800&display=swap" rel="stylesheet" />
+  <style>
+    /* ===== CSS DEĞİŞKENLERİ ===== */
+    :root {
+      --bg:        #080b10;
+      --surface:   #0d1117;
+      --border:    rgba(255,255,255,0.06);
+      --accent:    #00e5ff;
+      --accent2:   #ff3cac;
+      --text:      #c8d6e5;
+      --muted:     #4a5568;
+      --white:     #f0f4f8;
+    }
+
+    /* ===== RESET & TEMEL ===== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Space Mono', monospace;
+      font-size: 15px;
+      line-height: 1.7;
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    /* ===== ÖZEL İMLEÇ ===== */
+    .cursor {
+      position: fixed;
+      width: 10px; height: 10px;
+      background: var(--accent);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: transform 0.1s, width 0.2s, height 0.2s, opacity 0.2s;
+      mix-blend-mode: screen;
+    }
+    .cursor-ring {
+      position: fixed;
+      width: 36px; height: 36px;
+      border: 1px solid rgba(0,229,255,0.4);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9998;
+      transform: translate(-50%, -50%);
+      transition: transform 0.12s ease, width 0.3s, height 0.3s, border-color 0.3s;
+    }
+
+    /* ===== ARKA PLAN GLOW ===== */
+    .bg-glow {
+      position: fixed;
+      width: 600px; height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(0,229,255,0.05) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+      transform: translate(-50%, -50%);
+      transition: left 0.4s ease, top 0.4s ease;
+    }
+
+    /* ===== NOISE OVERLAY ===== */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0.4;
+    }
+
+    /* ===== NAV ===== */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.4rem 4rem;
+      background: linear-gradient(to bottom, rgba(8,11,16,0.95), transparent);
+      backdrop-filter: blur(8px);
+    }
+
+    .nav-logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.2rem;
+      color: var(--white);
+      letter-spacing: 0.1em;
+    }
+    .nav-logo span { color: var(--accent); }
+
+    .nav-links {
+      display: flex;
+      gap: 2.5rem;
+      list-style: none;
+    }
+    .nav-links a {
+      font-size: 0.78rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      transition: color 0.2s;
+      position: relative;
+    }
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -3px; left: 0;
+      width: 0; height: 1px;
+      background: var(--accent);
+      transition: width 0.3s;
+    }
+    .nav-links a:hover { color: var(--white); }
+    .nav-links a:hover::after { width: 100%; }
+
+    /* ===== HERO ===== */
+    #hero {
+      position: relative;
+      z-index: 2;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 0 4rem;
+      max-width: 900px;
+    }
+
+    .hero-tag {
+      font-size: 0.72rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1.5rem;
+      opacity: 0;
+      animation: fadeUp 0.8s 0.2s forwards;
+    }
+
+    .hero-name {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: clamp(3.5rem, 9vw, 7rem);
+      line-height: 0.95;
+      color: var(--white);
+      letter-spacing: -0.02em;
+      margin-bottom: 0.3rem;
+      opacity: 0;
+      animation: fadeUp 0.8s 0.4s forwards;
+    }
+
+    .hero-name .outline {
+      -webkit-text-stroke: 1px rgba(255,255,255,0.3);
+      color: transparent;
+    }
+
+    .hero-sub {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(1rem, 2.5vw, 1.4rem);
+      color: var(--muted);
+      margin-bottom: 2rem;
+      opacity: 0;
+      animation: fadeUp 0.8s 0.6s forwards;
+    }
+
+    .hero-desc {
+      max-width: 520px;
+      color: var(--text);
+      font-size: 0.88rem;
+      opacity: 0;
+      animation: fadeUp 0.8s 0.8s forwards;
+    }
+
+    .hero-cta {
+      margin-top: 3rem;
+      display: flex;
+      gap: 1rem;
+      opacity: 0;
+      animation: fadeUp 0.8s 1s forwards;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 0.75rem 2rem;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.78rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      border-radius: 2px;
+      cursor: none;
+      transition: all 0.2s;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: var(--bg);
+      font-weight: 700;
+    }
+    .btn-primary:hover { background: #33eaff; transform: translateY(-2px); }
+    .btn-ghost {
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+    .btn-ghost:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
+
+    /* ===== SCROLL İNDİKATÖRÜ ===== */
+    .scroll-hint {
+      position: absolute;
+      bottom: 2.5rem; left: 4rem;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+      opacity: 0;
+      animation: fadeIn 1s 1.5s forwards;
+    }
+    .scroll-line {
+      width: 40px; height: 1px;
+      background: var(--muted);
+      animation: scrollPulse 2s 1.5s infinite;
+    }
+
+    /* ===== BÖLÜM ORTAK STİL ===== */
+    section {
+      position: relative;
+      z-index: 2;
+      padding: 7rem 4rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .section-label {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      font-size: 0.7rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 3rem;
+    }
+    .section-label::before {
+      content: '';
+      width: 30px; height: 1px;
+      background: var(--accent);
+    }
+
+    .section-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: clamp(2rem, 4vw, 3rem);
+      color: var(--white);
+      line-height: 1.1;
+      margin-bottom: 1.5rem;
+    }
+
+    /* ===== HAKKIMDA ===== */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: start;
+    }
+
+    .about-text p {
+      color: var(--text);
+      font-size: 0.88rem;
+      margin-bottom: 1.2rem;
+    }
+
+    .about-text p em {
+      color: var(--accent);
+      font-style: normal;
+    }
+
+    .about-stats {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .stat-item {
+      padding: 1.5rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      background: var(--surface);
+      transition: border-color 0.3s, transform 0.3s;
+    }
+    .stat-item:hover {
+      border-color: rgba(0,229,255,0.3);
+      transform: translateX(6px);
+    }
+    .stat-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--accent);
+      line-height: 1;
+    }
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 0.3rem;
+      letter-spacing: 0.05em;
+    }
+
+    /* ===== STACK ETIKETLER ===== */
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin-top: 2rem;
+    }
+    .tag {
+      padding: 0.3rem 0.9rem;
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      transition: all 0.2s;
+    }
+    .tag:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* ===== PROJELER ===== */
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .project-card {
+      padding: 2rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      background: var(--surface);
+      transition: border-color 0.3s, transform 0.3s, background 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+    .project-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(to right, var(--accent), var(--accent2));
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.4s;
+    }
+    .project-card:hover {
+      border-color: rgba(0,229,255,0.2);
+      transform: translateY(-4px);
+      background: #0f1620;
+    }
+    .project-card:hover::before { transform: scaleX(1); }
+
+    .project-num {
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      color: var(--muted);
+      margin-bottom: 1rem;
+    }
+    .project-name {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 0.8rem;
+    }
+    .project-desc {
+      font-size: 0.82rem;
+      color: var(--text);
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+    }
+    .project-links {
+      display: flex;
+      gap: 1.2rem;
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    .project-links a {
+      color: var(--muted);
+      transition: color 0.2s;
+    }
+    .project-links a:hover { color: var(--accent); }
+
+    /* ===== BLOG ===== */
+    .blog-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .blog-item {
+      display: grid;
+      grid-template-columns: 100px 1fr auto;
+      align-items: center;
+      gap: 2rem;
+      padding: 1.6rem 2rem;
+      background: var(--surface);
+      transition: background 0.2s;
+      cursor: none;
+    }
+    .blog-item:hover { background: #0f1620; }
+
+    .blog-date {
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+    }
+    .blog-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--white);
+      transition: color 0.2s;
+    }
+    .blog-item:hover .blog-title { color: var(--accent); }
+    .blog-tag-small {
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent2);
+      white-space: nowrap;
+    }
+
+    /* ===== SOSYAL MEDYA ===== */
+    .social-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+
+    .social-card {
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+      padding: 1.4rem 1.8rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      background: var(--surface);
+      transition: all 0.3s;
+      cursor: none;
+    }
+    .social-card:hover {
+      border-color: rgba(0,229,255,0.3);
+      transform: translateY(-3px);
+      background: #0f1620;
+    }
+    .social-icon {
+      width: 38px; height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: rgba(0,229,255,0.08);
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+    .social-info {}
+    .social-platform {
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .social-handle {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--white);
+    }
+
+    /* ===== FOOTER ===== */
+    footer {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      padding: 3rem 4rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+    }
+    footer span { color: var(--accent); }
+
+    /* ===== DIVIDER ===== */
+    .divider {
+      width: 100%;
+      height: 1px;
+      background: var(--border);
+      position: relative;
+      z-index: 2;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    /* ===== ANİMASYONLAR ===== */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+    @keyframes scrollPulse {
+      0%, 100% { opacity: 0.4; }
+      50%       { opacity: 1; }
+    }
+
+    /* Scroll fade-in için */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ===== MOBİL ===== */
+    @media (max-width: 768px) {
+      nav { padding: 1.2rem 1.5rem; }
+      .nav-links { gap: 1.5rem; }
+      #hero, section { padding-left: 1.5rem; padding-right: 1.5rem; }
+      .about-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+      .blog-item { grid-template-columns: 1fr; gap: 0.4rem; }
+      .blog-tag-small { display: none; }
+      .scroll-hint { left: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Özel imleç -->
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+
+  <!-- Mouse glow -->
+  <div class="bg-glow" id="bgGlow"></div>
+
+  <!-- ===== NAV ===== -->
+  <nav>
+    <div class="nav-logo">F<span>O</span>XY</div>
+    <ul class="nav-links">
+      <li><a href="#about">hakkımda</a></li>
+      <li><a href="#projects">projeler</a></li>
+      <li><a href="#blog">blog</a></li>
+      <li><a href="#social">iletişim</a></li>
+    </ul>
+  </nav>
+
+  <!-- ===== HERO ===== -->
+  <section id="hero">
+    <p class="hero-tag">// kişisel alan</p>
+    <h1 class="hero-name">
+      tufan<br/>
+      <span class="outline">uraz</span>
+    </h1>
+    <p class="hero-sub">tasarımcı & geliştirici</p>
+    <p class="hero-desc">
+      Antalya'dan selam. 25 yaşında, mobilya tasarımı geçmişinden kod dünyasına geçiş yapan,
+      openSUSE Tumbleweed'de yaşayan, terminale aşık birinin dijital köşesi.
+    </p>
+    <div class="hero-cta">
+      <a href="#projects" class="btn btn-primary">projelere bak</a>
+      <a href="#social" class="btn btn-ghost">iletişime geç</a>
+    </div>
+    <div class="scroll-hint">
+      <div class="scroll-line"></div>
+      aşağı kaydır
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ===== HAKKIMDA ===== -->
+  <section id="about">
+    <div class="section-label">01 — hakkımda</div>
+    <div class="about-grid reveal">
+      <div class="about-text">
+        <h2 class="section-title">CNC'den<br/>terminale.</h2>
+        <p>
+          25 yaşındayım, Antalya'da yaşıyorum. Meslek lisesinde <em>mobilya ve iç mekan tasarımı</em>
+          okudum; 3 yıl boyunca CNC makineleri programladım, teknik çizimler yaptım.
+          Sonra bir gün terminali açtım ve bir daha kapamak istemedim.
+        </p>
+        <p>
+          Şu an ana sistemim <em>openSUSE Tumbleweed</em> (KDE Plasma + Wayland),
+          yanında bir Windows 11 dual-boot. Python öğreniyor, Linux ekosistemini keşfediyor,
+          her gün bir şeyleri kırıp tekrar kuruyorum.
+        </p>
+        <p>
+          Tasarım geçmişim sayesinde sadece çalışan değil,
+          <em>güzel</em> şeyler yapmaya önem veriyorum. Boş zamanlarımda oyun oynayıp
+          ara sıra Kick'te yayın yapıyorum.
+        </p>
+        <div class="tags">
+          <span class="tag">Python</span>
+          <span class="tag">Linux</span>
+          <span class="tag">Bash</span>
+          <span class="tag">HTML / CSS</span>
+          <span class="tag">openSUSE</span>
+          <span class="tag">KDE Plasma</span>
+          <span class="tag">Git</span>
+          <span class="tag">CNC</span>
+          <span class="tag">Teknik Çizim</span>
+        </div>
+      </div>
+      <div class="about-stats">
+        <div class="stat-item">
+          <div class="stat-num">3+</div>
+          <div class="stat-label">yıl CNC & teknik çizim deneyimi</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num">∞</div>
+          <div class="stat-label">güncelleme alan sistem (tumbleweed 🦗)</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num">1</div>
+          <div class="stat-label">amiral gemi dağıtım — openSUSE Tumbleweed</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ===== PROJELER ===== -->
+  <section id="projects">
+    <div class="section-label">02 — projeler</div>
+    <h2 class="section-title reveal">yaptıklarım.</h2>
+    <div class="projects-grid">
+      <div class="project-card reveal">
+        <div class="project-num">001</div>
+        <div class="project-name">bu site</div>
+        <p class="project-desc">
+          Kişisel portfolyo sitesi. Saf HTML/CSS/JS ile, framework kullanmadan,
+          elle yazılmış. Tasarımdan koda her şey benden.
+        </p>
+        <div class="project-links">
+          <a href="https://github.com/FOXY-cyber-dot" target="_blank">github ↗</a>
+        </div>
+      </div>
+      <div class="project-card reveal">
+        <div class="project-num">002</div>
+        <div class="project-name">pisi-nostalji</div>
+        <p class="project-desc">
+          Pisi Linux nostaljisi üzerine bir çalışma. Türkiye'nin kendi Linux dağıtımına
+          küçük bir saygı duruşu — script'ler, notlar ve karıştırma denemeleri.
+        </p>
+        <div class="project-links">
+          <a href="https://github.com/FOXY-cyber-dot/pisi-nostalji" target="_blank">github ↗</a>
+        </div>
+      </div>
+      <div class="project-card reveal">
+        <div class="project-num">003</div>
+        <div class="project-name">pisi-python3</div>
+        <p class="project-desc">
+          Pisi ekosisteminin Python 3 ile buluşturulması üzerine deneysel bir proje.
+          Eski koda yeni nefes, modern Python ile birlikte.
+        </p>
+        <div class="project-links">
+          <a href="https://github.com/FOXY-cyber-dot/pisi-python3" target="_blank">github ↗</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ===== BLOG ===== -->
+  <section id="blog">
+    <div class="section-label">03 — blog</div>
+    <h2 class="section-title reveal">yazdıklarım.</h2>
+    <div class="blog-list reveal">
+      <a class="blog-item" href="posts/cnc-den-kodlamaya.html">
+        <span class="blog-date">2026 / 05</span>
+        <span class="blog-title">CNC'den kodlamaya: bir kariyer geçişinin hikayesi</span>
+        <span class="blog-tag-small">kariyer</span>
+      </a>
+      <a class="blog-item" href="#">
+        <span class="blog-date">yakında</span>
+        <span class="blog-title">openSUSE Tumbleweed'i neden seçtim? — rolling release deneyimi</span>
+        <span class="blog-tag-small">linux</span>
+      </a>
+      <a class="blog-item" href="#">
+        <span class="blog-date">yakında</span>
+        <span class="blog-title">Terminal korkusu: bash'e ısınmak için başlangıç rehberi</span>
+        <span class="blog-tag-small">linux</span>
+      </a>
+      <a class="blog-item" href="#">
+        <span class="blog-date">yakında</span>
+        <span class="blog-title">Pisi Linux ile uğraşırken neler öğrendim?</span>
+        <span class="blog-tag-small">proje notları</span>
+      </a>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ===== SOSYAL MEDYA ===== -->
+  <section id="social">
+    <div class="section-label">04 — iletişim</div>
+    <h2 class="section-title reveal">bul beni.</h2>
+    <div class="social-grid reveal">
+      <a class="social-card" href="https://github.com/FOXY-cyber-dot" target="_blank">
+        <div class="social-icon">⌥</div>
+        <div class="social-info">
+          <div class="social-platform">GitHub</div>
+          <div class="social-handle">FOXY-cyber-dot</div>
+        </div>
+      </a>
+      <a class="social-card" href="https://x.com/9RockstarFoxy" target="_blank">
+        <div class="social-icon">𝕏</div>
+        <div class="social-info">
+          <div class="social-platform">X / Twitter</div>
+          <div class="social-handle">@9RockstarFoxy</div>
+        </div>
+      </a>
+      <a class="social-card" href="https://kick.com/foxy1987" target="_blank">
+        <div class="social-icon">▶</div>
+        <div class="social-info">
+          <div class="social-platform">Kick</div>
+          <div class="social-handle">foxy1987</div>
+        </div>
+      </a>
+      <a class="social-card" href="https://www.instagram.com/tufan.uraz" target="_blank">
+        <div class="social-icon">◉</div>
+        <div class="social-info">
+          <div class="social-platform">Instagram</div>
+          <div class="social-handle">@tufan.uraz</div>
+        </div>
+      </a>
+      <a class="social-card" href="https://www.reddit.com/user/Cyber-Foxy" target="_blank">
+        <div class="social-icon">↑</div>
+        <div class="social-info">
+          <div class="social-platform">Reddit</div>
+          <div class="social-handle">u/Cyber-Foxy</div>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer>
+    <p>tasarlandı & geliştirildi — <span>tufan</span> × <span>claude</span> — <span>2025 — 2026</span></p>
+  </footer>
+
+  <!-- ===== JAVASCRIPT ===== -->
+  <script>
+    // --- Özel imleç hareketi ---
+    const cursor     = document.getElementById('cursor');
+    const cursorRing = document.getElementById('cursorRing');
+    const bgGlow     = document.getElementById('bgGlow');
+
+    let mouseX = 0, mouseY = 0;
+    let ringX = 0, ringY = 0;
+
+    document.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+
+      // İmleç ve glow anında takip eder
+      cursor.style.left = mouseX + 'px';
+      cursor.style.top  = mouseY + 'px';
+      bgGlow.style.left = mouseX + 'px';
+      bgGlow.style.top  = mouseY + 'px';
+    });
+
+    // Halka yumuşak takip eder
+    function animateRing() {
+      ringX += (mouseX - ringX) * 0.12;
+      ringY += (mouseY - ringY) * 0.12;
+      cursorRing.style.left = ringX + 'px';
+      cursorRing.style.top  = ringY + 'px';
+      requestAnimationFrame(animateRing);
+    }
+    animateRing();
+
+    // Hover'da imleç büyür
+    document.querySelectorAll('a, button, .project-card, .social-card, .blog-item').forEach(el => {
+      el.addEventListener('mouseenter', () => {
+        cursor.style.width  = '16px';
+        cursor.style.height = '16px';
+        cursorRing.style.width  = '50px';
+        cursorRing.style.height = '50px';
+        cursorRing.style.borderColor = 'rgba(0,229,255,0.7)';
+      });
+      el.addEventListener('mouseleave', () => {
+        cursor.style.width  = '10px';
+        cursor.style.height = '10px';
+        cursorRing.style.width  = '36px';
+        cursorRing.style.height = '36px';
+        cursorRing.style.borderColor = 'rgba(0,229,255,0.4)';
+      });
+    });
+
+    // --- Scroll ile reveal animasyonu ---
+    const observer = new IntersectionObserver(
+      (entries) => entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      }),
+      { threshold: 0.1 }
+    );
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    // --- Nav link'lere active sınıfı (scroll pozisyonuna göre) ---
+    const sections = document.querySelectorAll('section[id]');
+    const navLinks = document.querySelectorAll('.nav-links a');
+
+    window.addEventListener('scroll', () => {
+      let current = '';
+      sections.forEach(sec => {
+        if (window.scrollY >= sec.offsetTop - 200) {
+          current = sec.getAttribute('id');
+        }
+      });
+      navLinks.forEach(a => {
+        a.style.color = a.getAttribute('href') === '#' + current
+          ? 'var(--white)' : '';
+      });
+    });
+  </script>
+
+</body>
+</html>
