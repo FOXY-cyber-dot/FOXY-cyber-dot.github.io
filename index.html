@@ -318,6 +318,25 @@
       margin-top: 0.3rem;
       letter-spacing: 0.05em;
     }
+    .stat-current {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin-top: 0.7rem;
+      padding: 0.25rem 0.7rem;
+      border: 1px solid rgba(0,229,255,0.25);
+      border-radius: 2px;
+      font-size: 0.68rem;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+    }
+    .stat-current::before {
+      content: '';
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 6px var(--accent);
+    }
 
     /* ===== STACK ETIKETLER ===== */
     .tags {
@@ -583,8 +602,8 @@
     </h1>
     <p class="hero-sub">tasarımcı & geliştirici</p>
     <p class="hero-desc">
-      Antalya'dan selam. 25 yaşında, mobilya tasarımı geçmişinden kod dünyasına geçiş yapan,
-      openSUSE Tumbleweed'de yaşayan, terminale aşık birinin dijital köşesi.
+      Mobilya tasarımından kod dünyasına geçiş yapan, openSUSE Tumbleweed'de yaşayan,
+      terminale aşık birinin dijital köşesi.
     </p>
     <div class="hero-cta">
       <a href="#projects" class="btn btn-primary">projelere bak</a>
@@ -605,19 +624,16 @@
       <div class="about-text">
         <h2 class="section-title">CNC'den<br/>terminale.</h2>
         <p>
-          25 yaşındayım, Antalya'da yaşıyorum. Meslek lisesinde <em>mobilya ve iç mekan tasarımı</em>
-          okudum; 3 yıl boyunca CNC makineleri programladım, teknik çizimler yaptım.
+          3 yıl boyunca CNC makineleri programladım, teknik çizimler yaptım.
           Sonra bir gün terminali açtım ve bir daha kapamak istemedim.
         </p>
         <p>
-          Şu an ana sistemim <em>openSUSE Tumbleweed</em> (KDE Plasma + Wayland),
-          yanında bir Windows 11 dual-boot. Python öğreniyor, Linux ekosistemini keşfediyor,
-          her gün bir şeyleri kırıp tekrar kuruyorum.
+          Şu an <em>openSUSE Tumbleweed</em> üzerinde kod yazıyor,
+          Linux ekosistemini keşfediyor ve her gün yeni bir şey öğreniyorum.
         </p>
         <p>
           Tasarım geçmişim sayesinde sadece çalışan değil,
-          <em>güzel</em> şeyler yapmaya önem veriyorum. Boş zamanlarımda oyun oynayıp
-          ara sıra Kick'te yayın yapıyorum.
+          <em>güzel</em> şeyler yapmaya önem veriyorum.
         </p>
         <div class="tags">
           <span class="tag">Python</span>
@@ -625,7 +641,9 @@
           <span class="tag">Bash</span>
           <span class="tag">HTML / CSS</span>
           <span class="tag">openSUSE</span>
-          <span class="tag">KDE Plasma</span>
+          <span class="tag">Arch</span>
+          <span class="tag">Fedora</span>
+          <span class="tag">Debian</span>
           <span class="tag">Git</span>
           <span class="tag">CNC</span>
           <span class="tag">Teknik Çizim</span>
@@ -641,8 +659,9 @@
           <div class="stat-label">güncelleme alan sistem (tumbleweed 🦗)</div>
         </div>
         <div class="stat-item">
-          <div class="stat-num">1</div>
-          <div class="stat-label">amiral gemi dağıtım — openSUSE Tumbleweed</div>
+          <div class="stat-num">4</div>
+          <div class="stat-label">denenmiş dağıtım — Arch, Fedora, Debian, openSUSE</div>
+          <div class="stat-current">şu an: openSUSE Tumbleweed</div>
         </div>
       </div>
     </div>
@@ -663,29 +682,30 @@
           elle yazılmış. Tasarımdan koda her şey benden.
         </p>
         <div class="project-links">
-          <a href="https://github.com/FOXY-cyber-dot" target="_blank">github ↗</a>
+          <a href="#">kaynak kod ↗</a>
         </div>
       </div>
       <div class="project-card reveal">
         <div class="project-num">002</div>
-        <div class="project-name">pisi-nostalji</div>
+        <div class="project-name">proje adı</div>
         <p class="project-desc">
-          Pisi Linux nostaljisi üzerine bir çalışma. Türkiye'nin kendi Linux dağıtımına
-          küçük bir saygı duruşu — script'ler, notlar ve karıştırma denemeleri.
+          Buraya projenin kısa açıklaması gelecek. Ne yaptığını,
+          hangi teknolojiyle yaptığını birkaç cümleyle anlat.
         </p>
         <div class="project-links">
-          <a href="https://github.com/FOXY-cyber-dot/pisi-nostalji" target="_blank">github ↗</a>
+          <a href="#">github ↗</a>
+          <a href="#">demo ↗</a>
         </div>
       </div>
       <div class="project-card reveal">
         <div class="project-num">003</div>
-        <div class="project-name">pisi-python3</div>
+        <div class="project-name">proje adı</div>
         <p class="project-desc">
-          Pisi ekosisteminin Python 3 ile buluşturulması üzerine deneysel bir proje.
-          Eski koda yeni nefes, modern Python ile birlikte.
+          Buraya projenin kısa açıklaması gelecek. Ne yaptığını,
+          hangi teknolojiyle yaptığını birkaç cümleyle anlat.
         </p>
         <div class="project-links">
-          <a href="https://github.com/FOXY-cyber-dot/pisi-python3" target="_blank">github ↗</a>
+          <a href="#">github ↗</a>
         </div>
       </div>
     </div>
@@ -699,24 +719,19 @@
     <h2 class="section-title reveal">yazdıklarım.</h2>
     <div class="blog-list reveal">
       <a class="blog-item" href="posts/cnc-den-kodlamaya.html">
-        <span class="blog-date">2026 / 05</span>
+        <span class="blog-date">2025 / 05</span>
         <span class="blog-title">CNC'den kodlamaya: bir kariyer geçişinin hikayesi</span>
         <span class="blog-tag-small">kariyer</span>
       </a>
       <a class="blog-item" href="#">
         <span class="blog-date">yakında</span>
-        <span class="blog-title">openSUSE Tumbleweed'i neden seçtim? — rolling release deneyimi</span>
+        <span class="blog-title">openSUSE Tumbleweed'i neden seçtim?</span>
         <span class="blog-tag-small">linux</span>
       </a>
       <a class="blog-item" href="#">
         <span class="blog-date">yakında</span>
-        <span class="blog-title">Terminal korkusu: bash'e ısınmak için başlangıç rehberi</span>
+        <span class="blog-title">Terminal korkusu: başlangıç rehberi</span>
         <span class="blog-tag-small">linux</span>
-      </a>
-      <a class="blog-item" href="#">
-        <span class="blog-date">yakında</span>
-        <span class="blog-title">Pisi Linux ile uğraşırken neler öğrendim?</span>
-        <span class="blog-tag-small">proje notları</span>
       </a>
     </div>
   </section>
@@ -735,32 +750,18 @@
           <div class="social-handle">FOXY-cyber-dot</div>
         </div>
       </a>
-      <a class="social-card" href="https://x.com/9RockstarFoxy" target="_blank">
+      <a class="social-card" href="#" target="_blank">
         <div class="social-icon">𝕏</div>
         <div class="social-info">
           <div class="social-platform">X / Twitter</div>
           <div class="social-handle">@9RockstarFoxy</div>
         </div>
       </a>
-      <a class="social-card" href="https://kick.com/foxy1987" target="_blank">
+      <a class="social-card" href="https://kick.com/9RockstarFoxy" target="_blank">
         <div class="social-icon">▶</div>
         <div class="social-info">
           <div class="social-platform">Kick</div>
-          <div class="social-handle">foxy1987</div>
-        </div>
-      </a>
-      <a class="social-card" href="https://www.instagram.com/tufan.uraz" target="_blank">
-        <div class="social-icon">◉</div>
-        <div class="social-info">
-          <div class="social-platform">Instagram</div>
-          <div class="social-handle">@tufan.uraz</div>
-        </div>
-      </a>
-      <a class="social-card" href="https://www.reddit.com/user/Cyber-Foxy" target="_blank">
-        <div class="social-icon">↑</div>
-        <div class="social-info">
-          <div class="social-platform">Reddit</div>
-          <div class="social-handle">u/Cyber-Foxy</div>
+          <div class="social-handle">9RockstarFoxy</div>
         </div>
       </a>
     </div>
@@ -768,7 +769,7 @@
 
   <!-- ===== FOOTER ===== -->
   <footer>
-    <p>tasarlandı & geliştirildi — <span>tufan</span> × <span>claude</span> — <span>2025 — 2026</span></p>
+    <p>tasarlandı & geliştirildi — <span>tufan</span> × <span>claude</span> — <span>2025</span></p>
   </footer>
 
   <!-- ===== JAVASCRIPT ===== -->
